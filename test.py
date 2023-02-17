@@ -1,13 +1,21 @@
 import pymysql
 import traceback
-from flask import Flask, request, json, jsonify, abort, flash, redirect, url_for, render_template
+from flask import Flask, request, json, jsonify, abort, flash, redirect, url_for, render_template, session
 from typing import List
 
 from sqlalchemy.sql.elements import or_
+from sqlalchemy.sql.functions import random
 from werkzeug.security import generate_password_hash, check_password_hash
+from random import seed, randint
+from search_and_add import app, User, db, Order
 
-from search_and_add import app, User, db
 
+def request_parse(req_data):
+    if req_data.method == 'POST':
+        data = req_data.json
+    elif req_data.method == 'GET':
+        data = req_data.args
+    return data
 
 # users = {
 #     "john": generate_password_hash("hello"),
@@ -61,7 +69,7 @@ def register():
             return '该用户名已被注册！'
     return error
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     db = pymysql.connect(host="localhost", user="root", password="154813029!Ax", database="runoob", charset="utf8")
     cursor = db.cursor()
@@ -75,11 +83,16 @@ def login():
     else:
         return '用户名或密码不正确'
 
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    return '您已登出'
+
+
 @app.route('/productList', methods=['GET', 'POST'])
 def get_productList_by_type():
     db = pymysql.connect(host="localhost", user="root", password="154813029!Ax", database="runoob", charset="utf8")
     cursor = db.cursor()
-    list_id = request.values.get('list_id')
+    list_id = request.args.get('list_id')
     sql = "select * from Product_tb where type='" + list_id + "'"
     cursor.execute(sql)
     results = cursor.fetchall()
@@ -113,7 +126,10 @@ def get_productList_by_type():
 
 @app.route('/order', methods=['POST'])
 def order():
-    print(request.form.get('nickname'))
+    randomId = randint(100000, 2000000)
+    order = Order(refId=randomId, productName=request.form['productName'], amount=request.form['amount'])
+    db.session.add(order)
+    db.session.commit()
     return 'you have brought the products successfully'
 
 if __name__ == '__main__':
