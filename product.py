@@ -8,7 +8,6 @@ def get_productList_by_type():
     db = pymysql.connect(host="localhost", user="root", password="154813029!Ax", database="runoob", charset="utf8")
     cursor = db.cursor()
     list_id = request.values.get('list_id')
-    print(list_id)
     sql = "select * from Product_tb where type='" + list_id + "'"
     cursor.execute(sql)
     results = cursor.fetchall()

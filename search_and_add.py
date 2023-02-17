@@ -20,7 +20,8 @@ class User(db.Model):
     __tablename__ = 'User_tb'
     mid = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    pwd = db.Column(db.String(64), unique=True)
+    pwd = db.Column(db.String(64))
+    mobileNumber = db.Column(db.Integer)
 
 class Product(db.Model):
     __tablename__ = 'product_tb'
