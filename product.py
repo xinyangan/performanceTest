@@ -3,12 +3,11 @@ from flask import Flask, request, json, jsonify, abort, flash, redirect, url_for
 from random import seed, randint
 from search_and_add import app, User, db, Order
 
-@app.route('/productList', methods=['GET', 'POST'])
-def get_productList_by_type():
+@app.route('/productList/<id>/', methods=['GET', 'POST'])
+def get_productList_by_type(id):
     db = pymysql.connect(host="localhost", user="root", password="154813029!Ax", database="runoob", charset="utf8")
     cursor = db.cursor()
-    list_id = request.values.get('list_id')
-    sql = "select * from Product_tb where type='" + list_id + "'"
+    sql = "select * from Product_tb where type='" + id + "'"
     cursor.execute(sql)
     results = cursor.fetchall()
     if len(results) == 0:
